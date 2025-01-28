@@ -102,6 +102,34 @@ function placeApple() {
   return { x, y };
 }
 
+function getTouchDirection(touchStart, touchEnd) {
+  const deltaX = touchEnd.x - touchStart.x;
+  const deltaY = touchEnd.y - touchStart.y;
+  
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (deltaX > 0) return { x: 20, y: 0 }; // Right
+    else return { x: -20, y: 0 }; // Left
+  } else {
+    if (deltaY > 0) return { x: 0, y: 20 }; // Down
+    else return { x: 0, y: -20 }; // Up
+  }
+}
+
+let touchStartCoord = null;
+
+canvas.addEventListener('touchstart', (e) => {
+  touchStartCoord = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+});
+
+canvas.addEventListener('touchend', (e) => {
+  const touchEndCoord = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+  const newDirection = getTouchDirection(touchStartCoord, touchEndCoord);
+
+  if ((newDirection.x !== 0 && direction.x === 0) || (newDirection.y !== 0 && direction.y === 0)) {
+    direction = newDirection;
+  }
+});
+
 document.addEventListener('keydown', (e) => {
   const key = e.key;
 
