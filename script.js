@@ -43,7 +43,7 @@ function update() {
 
   // Проверяем на поедание яблока
   if (newHead.x === apple.x && newHead.y === apple.y) {
-    score += 10;
+    score += 1;
     apple = placeApple(); // Генерируем новое яблоко
   } else {
     snake.pop(); // Убираем хвост, если яблоко не съедено
