@@ -1,158 +1,110 @@
-// Получение элементов DOM.
-const startGameBtn = document.getElementById('startGameBtn');
-const playBtn = document.getElementById('playBtn');
-const gameCanvas = document.getElementById('gameCanvas');
-const gameOverDialog = document.getElementById('gameOverDialog');
-const restartBtn = document.getElementById('restartBtn');
-const scoreElement = document.getElementById('score');
-const container = document.getElementById('container');
+document.addEventListener('DOMContentLoaded', () => {
+    const startGameBtn = document.getElementById('start-game-btn');
+    const playBtn = document.getElementById('play-btn');
+    const gameBoardCanvas = document.getElementById('game-board');
+    const scoreDisplay = document.getElementById('score');
+    const gameContainer = document.getElementById('game');
+    
+    const ctx = gameBoardCanvas.getContext('2d');
+    let score = 0;
+    let snake = [{x: 5, y: 5}];
+    let food = {};
+    const cellSize = 20;
+    let direction = 'RIGHT';
+    let gameInterval;
 
-// Настройки игры.
-const ctx = gameCanvas.getContext('2d');
-gameCanvas.width = 400;
-gameCanvas.height = 400;
-const tileSize = 20;
-
-let snake = [{ x: 200, y: 200 }];
-let direction = { x: 0, y: 0 };
-let food = { x: 0, y: 0 };
-let gameInterval = null;
-let score = 0;
-
-// Генерация новой еды.
-function spawnFood() {
-    food.x = Math.floor(Math.random() * (gameCanvas.width / tileSize)) * tileSize;
-    food.y = Math.floor(Math.random() * (gameCanvas.height / tileSize)) * tileSize;
-}
-
-// Обновление интерфейса.
-function updateUI() {
-    scoreElement.textContent = `Счёт: ${score}`;
-}
-
-// Проверка столкновений.
-function checkCollision() {
-    const head = snake[0];
-    // Проверка столкновения со стенкой.
-    if (head.x < 0 || head.y < 0 || head.x >= gameCanvas.width || head.y >= gameCanvas.height) {
-        endGame();
+    function init() {
+        gameBoardCanvas.width = 400;
+        gameBoardCanvas.height = 400;
+        snake = [{x: 5, y: 5}];
+        direction = 'RIGHT';
+        createFood();
+        score = 0;
+        playBtn.classList.remove('hidden');
+        scoreDisplay.textContent = 'Счёт: 0';
     }
-    // Проверка столкновения с телом.
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-            endGame();
+
+    function createFood() {
+        food.x = Math.floor(Math.random() * (gameBoardCanvas.width / cellSize));
+        food.y = Math.floor(Math.random() * (gameBoardCanvas.height / cellSize));
+    }
+
+    function drawCell(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    }
+
+    function drawGame() {
+        ctx.clearRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
+        snake.forEach(part => drawCell(part.x, part.y, '#ffffff'));
+        drawCell(food.x, food.y, '#ff4d4d');
+    }
+
+    function moveSnake() {
+        const head = {...snake[0]};
+        switch (direction) {
+            case 'RIGHT': head.x++; break;
+            case 'LEFT': head.x--; break;
+            case 'UP': head.y--; break;
+            case 'DOWN': head.y++; break;
+        }
+        snake.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            scoreDisplay.textContent = `Счёт: ${score}`;
+            createFood();
+        } else {
+            snake.pop();
+        }
+
+        if (head.x < 0 || head.x >= gameBoardCanvas.width / cellSize || head.y < 0 || head.y >= gameBoardCanvas.height / cellSize ||
+            snake.slice(1).some(part => part.x === head.x && part.y === head.y)) {
+            clearInterval(gameInterval);
+            alert('Игра окончена! Ваш счёт: ' + score);
+            init();
         }
     }
-}
 
-// Окончание игры.
-function endGame() {
-    clearInterval(gameInterval);
-    gameOverDialog.classList.remove('hidden');
-    container.classList.add('hidden');
+    function changeDirection(event) {
+        if ((event.key === 'ArrowUp' || event.key === 'w') && direction !== 'DOWN') direction = 'UP';
+        if ((event.key === 'ArrowDown' || event.key === 's') && direction !== 'UP') direction = 'DOWN';
+        if ((event.key === 'ArrowLeft' || event.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
 
-    document.getElementById('finalScore').textContent = `Ваш итоговый счёт: ${score}`;
-}
-
-// Основная логика игры.
-function gameLoop() {
-    const head = { ...snake[0] };
-    head.x += direction.x * tileSize;
-    head.y += direction.y * tileSize;
-    snake.unshift(head);
-
-    // Проверка еды.
-    if (head.x === food.x && head.y === food.y) {
-        score++;
-        updateUI();
-        spawnFood();
-    } else {
-        snake.pop();
+        if ((event.key === 'ArrowRight' || event.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
     }
 
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    function handleTouch(event) {
+        const touch = event.touches[0];
+        const moveX = touch.clientX;
+        const moveY = touch.clientY;
+        const snakeHead = snake[0];
 
-    // Отрисовка еды.
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, tileSize, tileSize);
+        if (moveX > snakeHead.x * cellSize && direction !== 'LEFT' && direction !== 'RIGHT') {
+            direction = 'RIGHT';
+        } else if (moveX < snakeHead.x * cellSize && direction !== 'RIGHT' && direction !== 'LEFT') {
+            direction = 'LEFT';
+        } else if (moveY > snakeHead.y * cellSize && direction !== 'UP' && direction !== 'DOWN') {
+            direction = 'DOWN';
+        } else if (moveY < snakeHead.y * cellSize && direction !== 'DOWN' && direction !== 'UP') {
+            direction = 'UP';
+        }
+    }
 
-    // Отрисовка змейки.
-    ctx.fillStyle = 'green';
-    snake.forEach(part => {
-        ctx.fillRect(part.x, part.y, tileSize, tileSize);
+    startGameBtn.addEventListener('click', () => {
+        gameContainer.classList.remove('hidden');
+        startGameBtn.classList.add('hidden');
+        init();
     });
 
-    checkCollision();
-}
+    playBtn.addEventListener('click', () => {
+        playBtn.classList.add('hidden');
+        gameInterval = setInterval(() => {
+            moveSnake();
+            drawGame();
+        }, 100);
+    });
 
-// Начало игры.
-function startGame() {
-    snake = [{ x: 200, y: 200 }];
-    direction = { x: 0, y: 0 };
-    score = 0;
-    updateUI();
-    spawnFood();
-    gameInterval = setInterval(gameLoop, 200);
-}
-
-// Обработка управления.
-function handleControls(event) {
-    const key = event.key || '';
-    switch (key) {
-        case 'ArrowUp':
-            if (direction.y === 0) direction = { x: 0, y: -1 };
-            break;
-        case 'ArrowDown':
-            if (direction.y === 0) direction = { x: 0, y: 1 };
-            break;
-        case 'ArrowLeft':
-            if (direction.x === 0) direction = { x: -1, y: 0 };
-            break;
-        case 'ArrowRight':
-            if (direction.x === 0) direction = { x: 1, y: 0 };
-            break;
-    }
-}
-
-// Мобильное управление.
-let touchStartX = 0;
-let touchStartY = 0;
-
-gameCanvas.addEventListener('touchstart', (event) => {
-    const touch = event.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
+    document.addEventListener('keydown', changeDirection);
+    gameBoardCanvas.addEventListener('touchstart', handleTouch);
 });
-
-gameCanvas.addEventListener('touchmove', (event) => {
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - touchStartX;
-    const deltaY = touch.clientY - touchStartY;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0 && direction.x === 0) direction = { x: 1, y: 0 };
-        else if (deltaX < 0 && direction.x === 0) direction = { x: -1, y: 0 };
-    } else {
-        if (deltaY > 0 && direction.y === 0) direction = { x: 0, y: 1 };
-        else if (deltaY < 0 && direction.y === 0) direction = { x: 0, y: -1 };
-    }
-});
-
-// Обработчики событий.
-startGameBtn.addEventListener('click', () => {
-    document.getElementById('menu').classList.add('hidden');
-    document.getElementById('game').classList.remove('hidden');
-});
-
-playBtn.addEventListener('click', () => {
-    startGame();
-    playBtn.style.display = 'none';
-});
-
-restartBtn.addEventListener('click', () => {
-    container.classList.remove('hidden');
-    gameOverDialog.classList.add('hidden');
-    playBtn.style.display = 'block';
-});
-
-document.addEventListener('keydown', handleControls);
