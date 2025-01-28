@@ -1,166 +1,148 @@
-// Получаем HTML элементы и задаем контекст рисования
-const canvas = document.getElementById('gameCanvas'); // Канвас для отрисовки
-const ctx = canvas.getContext('2d'); // Контекст для 2D рисования
-const startButton = document.getElementById('start-game'); // Кнопка для начала игры
-const restartButton = document.getElementById('restart-game'); // Кнопка для рестарта игры
-const menu = document.querySelector('.menu'); // Меню игры
-const gameOverScreen = document.getElementById('game-over'); // Экран окончания игры
-const finalScore = document.getElementById('final-score'); // Элемент отображения финального счета
+// Предотвращаем обновление страницы при случайном свайпе на сенсорном экране
+document.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+}, { passive: false });
 
-// Переменные для игры
-let snake; // Змейка
-let direction; // Текущее направление движения
-let apple; // Позиция яблока
-let score; // Текущий счет
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const startButton = document.getElementById('start-game');
+const restartButton = document.getElementById('restart-game');
+const menu = document.querySelector('.menu');
+const gameOverScreen = document.getElementById('game-over');
+const finalScore = document.getElementById('final-score');
 
-// Функция для начала игры
+let snake;
+let direction;
+let apple;
+let score;
+
 function initGame() {
-  // Показываем канвас, скрываем меню и экран окончания игры
   canvas.style.display = 'block';
   menu.style.display = 'none';
   gameOverScreen.style.display = 'none';
 
-  // Инициализация начального состояния игры
-  snake = [{ x: 300, y: 200 }]; // Стартовая позиция змейки
-  direction = { x: 20, y: 0 }; // Змейка начинает двигаться вправо
-  apple = placeApple(); // Генерация первого яблока
-  score = 0; // Начальный счет
+  snake = [{ x: 300, y: 200 }];
+  direction = { x: 20, y: 0 };
+  apple = placeApple();
+  score = 0;
 
-  // Запускаем игровой цикл
   window.requestAnimationFrame(gameLoop);
 }
 
-// Игровой цикл
 function gameLoop() {
   if (isGameOver()) {
-    // Проверяем, закончилась ли игра
-    endGame(); // Если закончилась, завершаем
+    endGame();
     return;
   }
 
   setTimeout(() => {
-    update(); // Обновляем состояние игры
-    draw(); // Рисуем текущее состояние
-    window.requestAnimationFrame(gameLoop); // Повторяем цикл
-  }, 100); // Задержка между кадрами (скорость игры)
+    update();
+    draw();
+    window.requestAnimationFrame(gameLoop);
+  }, 100);
 }
 
-// Обновление состояния игры
 function update() {
-  const head = snake[0]; // Голова змейки
-  const newHead = { x: head.x + direction.x, y: head.y + direction.y }; // Новая позиция головы
+  const head = snake[0];
+  const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
-  // Проверяем, съедено ли яблоко
+  // Проверяем на поедание яблока
   if (newHead.x === apple.x && newHead.y === apple.y) {
-    score += 1; // Увеличиваем счет
+    score += 1;
     apple = placeApple(); // Генерируем новое яблоко
   } else {
-    snake.pop(); // Если яблоко не съедено, удаляем последний сегмент змейки (хвост)
+    snake.pop(); // Убираем хвост, если яблоко не съедено
   }
 
-  snake.unshift(newHead); // Добавляем новую голову в начале массива
+  snake.unshift(newHead);
 }
 
-// Отрисовка игры
 function draw() {
-  // Очищаем канвас
-  ctx.fillStyle = '#ffffff'; // Белый фон
-  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Рисуем яблоко
-  ctx.fillStyle = '#ff6f61'; // Красный цвет яблока
-  ctx.fillRect(apple.x, apple.y, 20, 20); // Яблоко размером 20x20 пикселей
+  ctx.fillStyle = '#ff6f61';
+  ctx.fillRect(apple.x, apple.y, 20, 20);
 
   // Рисуем змейку
-  ctx.fillStyle = '#4CAF50'; // Зеленый цвет змейки
+  ctx.fillStyle = '#4CAF50';
   snake.forEach(segment => {
-    ctx.fillRect(segment.x, segment.y, 20, 20); // Каждый сегмент размером 20x20 пикселей
+    ctx.fillRect(segment.x, segment.y, 20, 20);
   });
 
-  // Рисуем счет
-  ctx.fillStyle = '#000000'; // Черный цвет текста
-  ctx.font = '20px Arial'; // Шрифт текста
-  ctx.fillText(`Счёт: ${score}`, 10, 20); // Вывод счета в верхнем левом углу
+  // Рисуем счёт
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Счёт: ${score}`, 10, 20);
 }
 
-// Проверяем, закончилась ли игра
 function isGameOver() {
-  const head = snake[0]; // Позиция головы змейки
+  const head = snake[0];
 
-  // Проверяем столкновение с краями канваса
+  // Проверяем столкновение с краями
   if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
     return true;
   }
 
-  // Проверяем столкновение головы с хвостом
+  // Проверяем столкновение с хвостом
   for (let i = 1; i < snake.length; i++) {
     if (head.x === snake[i].x && head.y === snake[i].y) {
       return true;
     }
   }
 
-  return false; // Если нет никакого столкновения, игра продолжается
+  return false;
 }
 
-// Завершаем игру
 function endGame() {
-  canvas.style.display = 'none'; // Скрываем канвас
-  gameOverScreen.style.display = 'block'; // Показываем экран окончания игры
-  finalScore.textContent = score; // Отображаем финальный счет
+  canvas.style.display = 'none';
+  gameOverScreen.style.display = 'block';
+  finalScore.textContent = score;
 }
 
-// Генерация нового расположения яблока
 function placeApple() {
-  // Выбираем случайные координаты кратные 20
   const x = Math.floor((Math.random() * canvas.width) / 20) * 20;
   const y = Math.floor((Math.random() * canvas.height) / 20) * 20;
-  return { x, y }; // Возвращаем координаты яблока
+  return { x, y };
 }
 
-// Обработчик направления по сенсору (касания)
 function getTouchDirection(touchStart, touchEnd) {
-  const deltaX = touchEnd.x - touchStart.x; // Разница по оси X
-  const deltaY = touchEnd.y - touchStart.y; // Разница по оси Y
+  const deltaX = touchEnd.x - touchStart.x;
+  const deltaY = touchEnd.y - touchStart.y;
   
-  // Определяем направление на основе движений
   if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    if (deltaX > 0) return { x: 20, y: 0 }; // Движение вправо
-    else return { x: -20, y: 0 }; // Движение влево
+    if (deltaX > 0) return { x: 20, y: 0 }; // Right
+    else return { x: -20, y: 0 }; // Left
   } else {
-    if (deltaY > 0) return { x: 0, y: 20 }; // Движение вниз
-    else return { x: 0, y: -20 }; // Движение вверх
+    if (deltaY > 0) return { x: 0, y: 20 }; // Down
+    else return { x: 0, y: -20 }; // Up
   }
 }
 
-let touchStartCoord = null; // Для хранения начала касания
+let touchStartCoord = null;
 
-// Событие начала касания
 canvas.addEventListener('touchstart', (e) => {
-  touchStartCoord = { x: e.touches[0].clientX, y: e.touches[0].clientY }; // Сохраняем стартовую позицию касания
+  touchStartCoord = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 });
 
-// Событие окончания касания
 canvas.addEventListener('touchend', (e) => {
-  const touchEndCoord = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }; // Сохранение конечной позиции касания
-  const newDirection = getTouchDirection(touchStartCoord, touchEndCoord); // Определяем направление на основе касания
+  const touchEndCoord = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+  const newDirection = getTouchDirection(touchStartCoord, touchEndCoord);
 
-  // Изменяем направление, если это возможно
   if ((newDirection.x !== 0 && direction.x === 0) || (newDirection.y !== 0 && direction.y === 0)) {
     direction = newDirection;
   }
 });
 
-// Обработчик клавиш
 document.addEventListener('keydown', (e) => {
   const key = e.key;
 
-  // Изменяем направление в зависимости от нажатой клавиши
   if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
   else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
   else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
   else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
 });
 
-// Навешиваем события на кнопки начала и рестарта
 startButton.addEventListener('click', initGame);
 restartButton.addEventListener('click', initGame);
