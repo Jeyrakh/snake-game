@@ -1,78 +1,45 @@
-* {
+body, html {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #f0f8ff; /* Милый светлый фон */
-    font-family: Arial, sans-serif;
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* Запрет прокрутки */
+    overflow: hidden; 
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
+    background-color: #ffecd9;
+    font-family: 'Arial', sans-serif;
 }
 
-#container {
+#game-container {
     text-align: center;
-    width: 100%;
-}
-
-#menu, #gameOverDialog {
-    animation: fade-in 1s ease-in-out forwards;
-}
-
-#menu h1 {
-    color: #2f4f4f;
-    margin-bottom: 20px;
 }
 
 button {
-    background-color: #48c774; /* Зеленая кнопка */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    font-size: 18px;
-    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 20px;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    color: #ffffff;
+    background-color: #3bafda;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #329657;
+    background-color: #2a8ab8;
+}
+
+#game-board {
+    background-color: #8ecf4d;
+    border: 2px solid #aadasd;
+}
+
+.score {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333333;
 }
 
 .hidden {
     display: none;
-}
-
-#game {
-    position: relative;
-}
-
-#gameCanvas {
-    background-color: #f5f5f5;
-    border: 2px solid #2f4f4f;
-    margin: auto;
-    display: block;
-}
-
-#score {
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-#gameOverDialog {
-    background-color: rgba(0,0,0,0.7);
-    color: white;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-}
-
-@keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
