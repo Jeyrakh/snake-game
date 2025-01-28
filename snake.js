@@ -1,97 +1,115 @@
-document.getElementById('startButton').addEventListener('click', startGame);
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const box = 20;
-let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box };
+const startButton = document.getElementById('start-game');
+const restartButton = document.getElementById('restart-game');
+const menu = document.querySelector('.menu');
+const gameOverScreen = document.getElementById('game-over');
+const finalScore = document.getElementById('final-score');
 
-let food = {
-    x: Math.floor(Math.random() * 19 + 1) * box,
-    y: Math.floor(Math.random() * 19 + 1) * box
-};
+let snake;
+let direction;
+let apple;
+let score;
 
-let score = 0;
-let dir;
+function initGame() {
+  canvas.style.display = 'block';
+  menu.style.display = 'none';
+  gameOverScreen.style.display = 'none';
 
-document.addEventListener('keydown', direction);
+  snake = [{ x: 300, y: 200 }];
+  direction = { x: 20, y: 0 };
+  apple = placeApple();
+  score = 0;
 
-function direction(event) {
-    if (event.keyCode == 37 && dir != 'RIGHT') {
-        dir = 'LEFT';
-    } else if (event.keyCode == 38 && dir != 'DOWN') {
-        dir = 'UP';
-    } else if (event.keyCode == 39 && dir != 'LEFT') {
-        dir = 'RIGHT';
-    } else if (event.keyCode == 40 && dir != 'UP') {
-        dir = 'DOWN';
-    }
+  window.requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (isGameOver()) {
+    endGame();
+    return;
+  }
+
+  setTimeout(() => {
+    update();
+    draw();
+    window.requestAnimationFrame(gameLoop);
+  }, 100);
+}
+
+function update() {
+  const head = snake[0];
+  const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+
+  // Проверяем на поедание яблока
+  if (newHead.x === apple.x && newHead.y === apple.y) {
+    score += 10;
+    apple = placeApple(); // Генерируем новое яблоко
+  } else {
+    snake.pop(); // Убираем хвост, если яблоко не съедено
+  }
+
+  snake.unshift(newHead);
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i == 0) ? 'green' : 'white';
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  // Рисуем яблоко
+  ctx.fillStyle = '#ff6f61';
+  ctx.fillRect(apple.x, apple.y, 20, 20);
 
-        ctx.strokeStyle = 'red';
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
+  // Рисуем змейку
+  ctx.fillStyle = '#4CAF50';
+  snake.forEach(segment => {
+    ctx.fillRect(segment.x, segment.y, 20, 20);
+  });
 
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, box, box);
-
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if (dir == 'LEFT') snakeX -= box;
-    if (dir == 'UP') snakeY -= box;
-    if (dir == 'RIGHT') snakeX += box;
-    if (dir == 'DOWN') snakeY += box;
-
-    if (snakeX == food.x && snakeY == food.y) {
-        score++;
-        food = {
-            x: Math.floor(Math.random() * 19 + 1) * box,
-            y: Math.floor(Math.random() * 19 + 1) * box
-        };
-    } else {
-        snake.pop();
-    }
-
-    let newHead = {
-        x: snakeX,
-        y: snakeY
-    };
-
-    if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
-        clearInterval(game);
-    }
-
-    snake.unshift(newHead);
-
-    ctx.fillStyle = 'white';
-    ctx.font = '45px Changa one';
-    ctx.fillText(score, 2 * box, 1.6 * box);
+  // Рисуем счёт
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Счёт: ${score}`, 10, 20);
 }
 
-function collision(head, array) {
-    for (let i = 0; i < array.length; i++) {
-        if (head.x == array[i].x && head.y == array[i].y) {
-            return true;
-        }
+function isGameOver() {
+  const head = snake[0];
+
+  // Проверяем столкновение с краями
+  if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+    return true;
+  }
+
+  // Проверяем столкновение с хвостом
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      return true;
     }
-    return false;
+  }
+
+  return false;
 }
 
-function startGame() {
-    document.getElementById('startButton').style.display = 'none';
-    canvas.style.display = 'block';
-
-    dir = undefined;
-
-    if (typeof game != 'undefined') clearInterval(game);
-
-    game = setInterval(draw, 100);
+function endGame() {
+  canvas.style.display = 'none';
+  gameOverScreen.style.display = 'block';
+  finalScore.textContent = score;
 }
+
+function placeApple() {
+  const x = Math.floor((Math.random() * canvas.width) / 20) * 20;
+  const y = Math.floor((Math.random() * canvas.height) / 20) * 20;
+  return { x, y };
+}
+
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
+});
+
+startButton.addEventListener('click', initGame);
+restartButton.addEventListener('click', initGame);
