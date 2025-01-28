@@ -7,12 +7,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="game-container">
-    <h1>Змейка</h1>
-    <p id="score">Счёт: 0</p>
-    <button id="start">Начать</button>
-    <button id="reset">Сбросить</button>
-  </main>
+  <div class="menu">
+    <h1>Добро пожаловать в Змейку!</h1>
+    <button id="start-game">Начать игру</button>
+  </div>
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+  <div class="game-over" id="game-over">
+    <h2 id="game-over-message">Вы проиграли!</h2>
+    <p>Ваш счёт: <span id="final-score">0</span></p>
+    <button id="restart-game">Играть снова</button>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
