@@ -120,3 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('startGameButton').addEventListener('click', function() {
         clearInterval(gameInterval);
+
+        snake = [{ x: box * 3, y: box * 3 }];
+        direction = 'right';
+        score = 0;
+        gameInterval = setInterval(draw, 100);
+    });
+});
