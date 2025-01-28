@@ -1,43 +1,40 @@
-:root {
-  --primary-color: #4caf50;
-  --secondary-color: #red;
-  --bg-color: #f6f8fa;
-}
-
 body {
-  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
-  background: var(--bg-color);
+  font-family: Arial, sans-serif;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   height: 100vh;
-}
-
-#game-container {
-  text-align: center;
+  background: linear-gradient(to bottom, #a8edea, #fed6e3);
 }
 
 canvas {
-  border: 2px solid var(--primary-color);
-  background: #fff;
-  display: block;
-  margin: 0 auto;
+  display: none;
+  background-color: #ffffff;
+  border: 2px solid #000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-button {
-  padding: 12px 20px;
-  margin: 10px;
-  font-size: 16px;
-  border: 1px solid var(--primary-color);
+.menu, .game-over {
+  text-align: center;
+}
+
+.menu button, .game-over button {
+  font-size: 20px;
+  padding: 10px 20px;
+  border: none;
   border-radius: 5px;
-  background-color: var(--primary-color);
-  color: #fff;
+  background-color: #ff6f91;
+  color: white;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #388e3c;
+.menu button:hover, .game-over button:hover {
+  background-color: #ff4261;
+}
+
+.game-over {
+  display: none;
 }
