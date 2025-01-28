@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Змейка</title>
+    <title>Игра Змейка</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <button id="startGameButton" class="btn">Начать игру</button>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <button id="start-button" onclick="showGame()">Начать игру</button>
+        <div id="game-container" class="hide">
+            <canvas id="gameCanvas"></canvas>
+            <div id="controls" class="hide">
+                <button id="play-button" onclick="startGame()">Старт</button>
+                <p>Очки: <span id="score">0</span></p>
+            </div>
+        </div>
+        <div id="game-over" class="hide">
+            <p id="game-over-text">Игра окончена!</p>
+            <button onclick="restartGame()">Играть снова</button>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <script src="snake.js"></script>
 </body>
 </html>
