@@ -1,110 +1,115 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const startGameBtn = document.getElementById('start-game-btn');
-    const playBtn = document.getElementById('play-btn');
-    const gameBoardCanvas = document.getElementById('game-board');
-    const scoreDisplay = document.getElementById('score');
-    const gameContainer = document.getElementById('game');
-    
-    const ctx = gameBoardCanvas.getContext('2d');
-    let score = 0;
-    let snake = [{x: 5, y: 5}];
-    let food = {};
-    const cellSize = 20;
-    let direction = 'RIGHT';
-    let gameInterval;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const startButton = document.getElementById('start-game');
+const restartButton = document.getElementById('restart-game');
+const menu = document.querySelector('.menu');
+const gameOverScreen = document.getElementById('game-over');
+const finalScore = document.getElementById('final-score');
 
-    function init() {
-        gameBoardCanvas.width = 400;
-        gameBoardCanvas.height = 400;
-        snake = [{x: 5, y: 5}];
-        direction = 'RIGHT';
-        createFood();
-        score = 0;
-        playBtn.classList.remove('hidden');
-        scoreDisplay.textContent = 'Счёт: 0';
+let snake;
+let direction;
+let apple;
+let score;
+
+function initGame() {
+  canvas.style.display = 'block';
+  menu.style.display = 'none';
+  gameOverScreen.style.display = 'none';
+
+  snake = [{ x: 300, y: 200 }];
+  direction = { x: 20, y: 0 };
+  apple = placeApple();
+  score = 0;
+
+  window.requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (isGameOver()) {
+    endGame();
+    return;
+  }
+
+  setTimeout(() => {
+    update();
+    draw();
+    window.requestAnimationFrame(gameLoop);
+  }, 100);
+}
+
+function update() {
+  const head = snake[0];
+  const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+
+  // Проверяем на поедание яблока
+  if (newHead.x === apple.x && newHead.y === apple.y) {
+    score += 10;
+    apple = placeApple(); // Генерируем новое яблоко
+  } else {
+    snake.pop(); // Убираем хвост, если яблоко не съедено
+  }
+
+  snake.unshift(newHead);
+}
+
+function draw() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Рисуем яблоко
+  ctx.fillStyle = '#ff6f61';
+  ctx.fillRect(apple.x, apple.y, 20, 20);
+
+  // Рисуем змейку
+  ctx.fillStyle = '#4CAF50';
+  snake.forEach(segment => {
+    ctx.fillRect(segment.x, segment.y, 20, 20);
+  });
+
+  // Рисуем счёт
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Счёт: ${score}`, 10, 20);
+}
+
+function isGameOver() {
+  const head = snake[0];
+
+  // Проверяем столкновение с краями
+  if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+    return true;
+  }
+
+  // Проверяем столкновение с хвостом
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      return true;
     }
+  }
 
-    function createFood() {
-        food.x = Math.floor(Math.random() * (gameBoardCanvas.width / cellSize));
-        food.y = Math.floor(Math.random() * (gameBoardCanvas.height / cellSize));
-    }
+  return false;
+}
 
-    function drawCell(x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-    }
+function endGame() {
+  canvas.style.display = 'none';
+  gameOverScreen.style.display = 'block';
+  finalScore.textContent = score;
+}
 
-    function drawGame() {
-        ctx.clearRect(0, 0, gameBoardCanvas.width, gameBoardCanvas.height);
-        snake.forEach(part => drawCell(part.x, part.y, '#ffffff'));
-        drawCell(food.x, food.y, '#ff4d4d');
-    }
+function placeApple() {
+  const x = Math.floor((Math.random() * canvas.width) / 20) * 20;
+  const y = Math.floor((Math.random() * canvas.height) / 20) * 20;
+  return { x, y };
+}
 
-    function moveSnake() {
-        const head = {...snake[0]};
-        switch (direction) {
-            case 'RIGHT': head.x++; break;
-            case 'LEFT': head.x--; break;
-            case 'UP': head.y--; break;
-            case 'DOWN': head.y++; break;
-        }
-        snake.unshift(head);
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
 
-        if (head.x === food.x && head.y === food.y) {
-            score++;
-            scoreDisplay.textContent = `Счёт: ${score}`;
-            createFood();
-        } else {
-            snake.pop();
-        }
-
-        if (head.x < 0 || head.x >= gameBoardCanvas.width / cellSize || head.y < 0 || head.y >= gameBoardCanvas.height / cellSize ||
-            snake.slice(1).some(part => part.x === head.x && part.y === head.y)) {
-            clearInterval(gameInterval);
-            alert('Игра окончена! Ваш счёт: ' + score);
-            init();
-        }
-    }
-
-    function changeDirection(event) {
-        if ((event.key === 'ArrowUp' || event.key === 'w') && direction !== 'DOWN') direction = 'UP';
-        if ((event.key === 'ArrowDown' || event.key === 's') && direction !== 'UP') direction = 'DOWN';
-        if ((event.key === 'ArrowLeft' || event.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
-
-        if ((event.key === 'ArrowRight' || event.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
-    }
-
-    function handleTouch(event) {
-        const touch = event.touches[0];
-        const moveX = touch.clientX;
-        const moveY = touch.clientY;
-        const snakeHead = snake[0];
-
-        if (moveX > snakeHead.x * cellSize && direction !== 'LEFT' && direction !== 'RIGHT') {
-            direction = 'RIGHT';
-        } else if (moveX < snakeHead.x * cellSize && direction !== 'RIGHT' && direction !== 'LEFT') {
-            direction = 'LEFT';
-        } else if (moveY > snakeHead.y * cellSize && direction !== 'UP' && direction !== 'DOWN') {
-            direction = 'DOWN';
-        } else if (moveY < snakeHead.y * cellSize && direction !== 'DOWN' && direction !== 'UP') {
-            direction = 'UP';
-        }
-    }
-
-    startGameBtn.addEventListener('click', () => {
-        gameContainer.classList.remove('hidden');
-        startGameBtn.classList.add('hidden');
-        init();
-    });
-
-    playBtn.addEventListener('click', () => {
-        playBtn.classList.add('hidden');
-        gameInterval = setInterval(() => {
-            moveSnake();
-            drawGame();
-        }, 100);
-    });
-
-    document.addEventListener('keydown', changeDirection);
-    gameBoardCanvas.addEventListener('touchstart', handleTouch);
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
 });
+
+startButton.addEventListener('click', initGame);
+restartButton.addEventListener('click', initGame);
