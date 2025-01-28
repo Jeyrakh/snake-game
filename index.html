@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра Змейка</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Змейка</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <button id="start-button" onclick="showGame()">Начать игру</button>
-        <div id="game-container" class="hide">
-            <canvas id="gameCanvas"></canvas>
-            <div id="controls" class="hide">
-                <button id="play-button" onclick="startGame()">Старт</button>
-                <p>Очки: <span id="score">0</span></p>
-            </div>
+    <div id="container">
+        <div id="menu">
+            <h1>Змейка</h1>
+            <button id="startGameBtn">Начать игру</button>
         </div>
-        <div id="game-over" class="hide">
-            <p id="game-over-text">Игра окончена!</p>
-            <button onclick="restartGame()">Играть снова</button>
+        <div id="game" class="hidden">
+            <canvas id="gameCanvas"></canvas>
+            <button id="playBtn">Старт</button>
+            <div id="score">Счёт: 0</div>
         </div>
     </div>
 
-    <script src="snake.js"></script>
+    <div id="gameOverDialog" class="hidden">
+        <h2>Игра окончена!</h2>
+        <p id="finalScore"></p>
+        <button id="restartBtn">Попробовать снова</button>
+    </div>
+    
+    <script src="script.js"></script>
 </body>
 </html>
