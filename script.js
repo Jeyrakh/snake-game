@@ -1,147 +1,122 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    document.body.appendChild(canvas);
-
-    let gridSize = 20;
-    let count = 0;
-    let snake = {
-        x: 160,
-        y: 160,
-        dx: gridSize,
-        dy: 0,
-        cells: [],
-        maxCells: 4
-    };
-    let apple = {
-        x: 320,
-        y: 320
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const box = 20; // Размер одной клеточки змейки
+    const canvasSize = 400; // Размер игрового поля
+    let snake = [{ x: box * 3, y: box * 3 }];
+    let direction = 'right';
+    let food = { x: Math.floor((Math.random() * canvasSize) / box) * box, y: Math.floor((Math.random() * canvasSize) / box) * box };
     let score = 0;
+    let gameInterval;
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
+    // Обработка нажатий клавиш
+    document.addEventListener('keydown', changeDirection);
 
-    function resetGame() {
-        snake.x = 160;
-        snake.y = 160;
-        snake.cells = [];
-        snake.maxCells = 4;
-        snake.dx = gridSize;
-        snake.dy = 0;
-        score = 0;
-        placeApple();
-    }
+    // Обработка касаний на экране (например, свайпы)
+    document.addEventListener('touchstart', handleTouchStart, false);
+    document.addEventListener('touchmove', handleTouchMove, false);
 
-    function placeApple() {
-        apple.x = getRandomInt(0, 25) * gridSize;
-        apple.y = getRandomInt(0, 25) * gridSize;
-    }
+    let xDown = null;
+    let yDown = null;
 
-    function gameOver() {
-        alert(`Game over! Score: ${score}`);
-        resetGame();
-    }
+    function handleTouchStart(evt) {
+        xDown = evt.touches[0].clientX;
+        yDown = evt.touches[0].clientY;
+    };
 
-    function loop() {
-        requestAnimationFrame(loop);
-        if (++count < 4) {
+    function handleTouchMove(evt) {
+        if (!xDown || !yDown) {
             return;
         }
-        count = 0;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        snake.x += snake.dx;
-        snake.y += snake.dy;
 
-        if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) {
-            gameOver();
-        }
+        let xUp = evt.touches[0].clientX;
+        let yUp = evt.touches[0].clientY;
 
-        snake.cells.unshift({ x: snake.x, y: snake.y });
-        if (snake.cells.length > snake.maxCells) {
-            snake.cells.pop();
-        }
+        let xDiff = xDown - xUp;
+        let yDiff = yDown - yUp;
 
-        ctx.fillStyle = "red";
-        ctx.fillRect(apple.x, apple.y, gridSize, gridSize);
-
-        ctx.fillStyle = "green";
-        snake.cells.forEach((cell, index) => {
-            ctx.fillRect(cell.x, cell.y, gridSize, gridSize);
-            if (cell.x === apple.x && cell.y === apple.y) {
-                snake.maxCells++;
-                score++;
-                placeApple();
-            }
-            for (let i = index + 1; i < snake.cells.length; i++) {
-                if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-                    gameOver();
-                }
-            }
-        });
-    }
-
-    function onKeyDown(e) {
-        if (e.key === "ArrowLeft" && snake.dx === 0) {
-            snake.dx = -gridSize;
-            snake.dy = 0;
-        } else if (e.key === "ArrowUp" && snake.dy === 0) {
-            snake.dx = 0;
-            snake.dy = -gridSize;
-        } else if (e.key === "ArrowRight" && snake.dx === 0) {
-            snake.dx = gridSize;
-            snake.dy = 0;
-        } else if (e.key === "ArrowDown" && snake.dy === 0) {
-            snake.dx = 0;
-            snake.dy = gridSize;
-        }
-    }
-
-    function onTouchStart(e) {
-        let touchStartX = e.touches[0].clientX;
-        let touchStartY = e.touches[0].clientY;
-
-        function onTouchMove(e) {
-            let touchEndX = e.changedTouches[0].clientX;
-            let touchEndY = e.changedTouches[0].clientY;
-
-            let dx = touchEndX - touchStartX;
-            let dy = touchEndY - touchStartY;
-
-            if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 0 && snake.dx === 0) {
-                    snake.dx = gridSize;
-                    snake.dy = 0;
-                } else if (dx < 0 && snake.dx === 0) {
-                    snake.dx = -gridSize;
-                    snake.dy = 0;
-                }
+        if (Math.abs(xDiff) > Math.abs(yDiff)) { // most significant
+            if (xDiff > 0) {
+                direction = 'left';
             } else {
-                if (dy > 0 && snake.dy === 0) {
-                    snake.dx = 0;
-                    snake.dy = gridSize;
-                } else if (dy < 0 && snake.dy === 0) {
-                    snake.dx = 0;
-                    snake.dy = -gridSize;
-                }
+                direction = 'right';
             }
+        } else {
+            if (yDiff > 0) {
+                direction = 'up';
+            } else {
+                direction = 'down';
+            }
+        }
+        xDown = null;
+        yDown = null;
+    };
 
-            document.removeEventListener("touchmove", onTouchMove);
+    function changeDirection(event) {
+        if (event.keyCode === 37 && direction !== 'right') {
+            direction = 'left';
+        } else if (event.keyCode === 38 && direction !== 'down') {
+            direction = 'up';
+        } else if (event.keyCode === 39 && direction !== 'left') {
+            direction = 'right';
+        } else if (event.keyCode === 40 && direction !== 'up') {
+            direction = 'down';
+        }
+    }
+
+    function collision(head, array) {
+        for (let i = 0; i < array.length; i++) {
+            if (head.x === array[i].x && head.y === array[i].y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+        for (let i = 0; i < snake.length; i++) {
+            ctx.fillStyle = (i === 0) ? 'green' : 'lightgreen';
+            ctx.fillRect(snake[i].x, snake[i].y, box, box);
         }
 
-        document.addEventListener("touchmove", onTouchMove);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(food.x, food.y, box, box);
+
+        let snakeX = snake[0].x;
+        let snakeY = snake[0].y;
+
+        if (direction === 'right') snakeX += box;
+        if (direction === 'left') snakeX -= box;
+        if (direction === 'up') snakeY -= box;
+        if (direction === 'down') snakeY += box;
+
+        if (snakeX < 0 || snakeY < 0 || snakeX >= canvasSize || snakeY >= canvasSize || collision({ x: snakeX, y: snakeY }, snake)) {
+            clearInterval(gameInterval);
+            ctx.fillStyle = 'black';
+            ctx.font = '50px Arial';
+            ctx.fillText('Game Over', canvasSize / 5, canvasSize / 2);
+            return;
+        }
+
+        if (snakeX === food.x && snakeY === food.y) {
+            score++;
+            food = {
+                x: Math.floor((Math.random() * canvasSize) / box) * box,
+                y: Math.floor((Math.random() * canvasSize) / box) * box
+            }
+        } else {
+            snake.pop();
+        }
+
+        let newHead = { x: snakeX, y: snakeY };
+        snake.unshift(newHead);
+
+        ctx.fillStyle = 'black';
+        ctx.font = '20px Arial';
+        ctx.fillText('Score: ' + score, box, box);
     }
 
-    function setup() {
-
-        canvas.width = 500;
-        canvas.height = 500;
-        document.addEventListener("keydown", onKeyDown);
-        document.addEventListener("touchstart", onTouchStart);
-        placeApple();
-        requestAnimationFrame(loop);
-    }
-
-    setup();
-});
+    document.getElementById('startGameButton').addEventListener('click', function() {
+        clearInterval(gameInterval);
