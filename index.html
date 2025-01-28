@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Игра Змейка</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра Змейка</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="game-container">
-    <h1>Змейка</h1>
-    <p id="score">Счёт: 0</p>
-    <button id="start">Начать</button>
-    <button id="reset">Сбросить</button>
-  </main>
-  <script src="script.js"></script>
+    <div id="menu">
+        <h1>Добро пожаловать в игру "Змейка"</h1>
+        <button id="start-btn">Начать игру</button>
+    </div>
+    <div id="game" style="display: none;">
+        <script src="script.js"></script>
+    </div>
 </body>
 </html>
