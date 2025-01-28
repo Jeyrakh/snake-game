@@ -1,128 +1,115 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  const gameContainer = document.querySelector("#game-container");
-  const scoreElement = document.querySelector("#score");
-  const resetButton = document.querySelector("#reset");
-  
-  let width = 600; // ширина поля игры
-  let height = 400; // высота поля игры
-  let cellSize = 20; // размер «клеток»
-  let direction = "RIGHT";
-  let snake = [{ x: 60, y: 100 }];
-  let apple = generateApple();
-  let score = 0;
-  let running = false;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const startButton = document.getElementById('start-game');
+const restartButton = document.getElementById('restart-game');
+const menu = document.querySelector('.menu');
+const gameOverScreen = document.getElementById('game-over');
+const finalScore = document.getElementById('final-score');
 
-  canvas.width = width;
-  canvas.height = height;
-  gameContainer.appendChild(canvas);
+let snake;
+let direction;
+let apple;
+let score;
 
-  function startGame() {
-    running = true;
-    drawBoard();
-    updateGame();
+function initGame() {
+  canvas.style.display = 'block';
+  menu.style.display = 'none';
+  gameOverScreen.style.display = 'none';
+
+  snake = [{ x: 300, y: 200 }];
+  direction = { x: 20, y: 0 };
+  apple = placeApple();
+  score = 0;
+
+  window.requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (isGameOver()) {
+    endGame();
+    return;
   }
 
-  function resetGame() {
-    running = false;
-    direction = "RIGHT";
-    snake = [{ x: 60, y: 100 }];
-    apple = generateApple();
-    score = 0;
-    scoreElement.textContent = `Счёт: ${score}`;
-    drawBoard();
+  setTimeout(() => {
+    update();
+    draw();
+    window.requestAnimationFrame(gameLoop);
+  }, 100);
+}
+
+function update() {
+  const head = snake[0];
+  const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+
+  // Проверяем на поедание яблока
+  if (newHead.x === apple.x && newHead.y === apple.y) {
+    score += 10;
+    apple = placeApple(); // Генерируем новое яблоко
+  } else {
+    snake.pop(); // Убираем хвост, если яблоко не съедено
   }
 
-  function drawBoard() {
-    context.clearRect(0, 0, width, height);
-  
-    // Фон
-    context.fillStyle = "#f8f9fa";
-    context.fillRect(0, 0, width, height);
+  snake.unshift(newHead);
+}
 
-    // Яблоко
-    context.fillStyle = "red";
-    context.beginPath();
-    context.arc(apple.x + cellSize / 2, apple.y + cellSize / 2, cellSize / 2, 0, Math.PI * 2);
-    context.fill();
+function draw() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Змейка
-    context.fillStyle = "green";
-    snake.forEach(({ x, y }) => {
-      context.beginPath();
-      context.roundRect(x, y, cellSize, cellSize, 5);
-      context.fill();
-    });
+  // Рисуем яблоко
+  ctx.fillStyle = '#ff6f61';
+  ctx.fillRect(apple.x, apple.y, 20, 20);
+
+  // Рисуем змейку
+  ctx.fillStyle = '#4CAF50';
+  snake.forEach(segment => {
+    ctx.fillRect(segment.x, segment.y, 20, 20);
+  });
+
+  // Рисуем счёт
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Счёт: ${score}`, 10, 20);
+}
+
+function isGameOver() {
+  const head = snake[0];
+
+  // Проверяем столкновение с краями
+  if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+    return true;
   }
 
-  function generateApple() {
-    return {
-      x: Math.floor(Math.random() * (width / cellSize)) * cellSize,
-      y: Math.floor(Math.random() * (height / cellSize)) * cellSize,
-    };
-  }
-
-  function updateGame() {
-    if (!running) return;
-
-    const head = { ...snake[0] };
-
-    switch (direction) {
-      case "RIGHT":
-        head.x += cellSize;
-        break;
-      case "LEFT":
-        head.x -= cellSize;
-        break;
-      case "UP":
-        head.y -= cellSize;
-        break;
-      case "DOWN":
-        head.y += cellSize;
-        break;
+  // Проверяем столкновение с хвостом
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      return true;
     }
-
-    // Проверка столкновений
-    if (
-      head.x < 0 ||
-      head.y < 0 ||
-      head.x >= width ||
-      head.y >= height ||
-      snake.some(segment => segment.x === head.x && segment.y === head.y)
-    ) {
-      alert(`Вы проиграли! Ваш итоговый счёт: ${score}`);
-      resetGame();
-      return;
-    }
-
-    snake.unshift(head);
-
-    // Проверка на поедание яблока
-    if (head.x === apple.x && head.y === apple.y) {
-      apple = generateApple();
-      score++;
-      scoreElement.textContent = `Счёт: ${score}`;
-    } else {
-      snake.pop(); // Удаляем хвост, если не съедено яблоко
-    }
-
-    drawBoard();
-    setTimeout(updateGame, 100); // Скорость игры
   }
 
-  function changeDirection(event) {
-    const { key } = event;
-    if (key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-    if (key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-    if (key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-    if (key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-  }
+  return false;
+}
 
-  document.addEventListener("keydown", changeDirection);
-  resetButton.addEventListener("click", resetGame);
+function endGame() {
+  canvas.style.display = 'none';
+  gameOverScreen.style.display = 'block';
+  finalScore.textContent = score;
+}
 
-  // Основной старт игры
-  drawBoard();
-  gameContainer.querySelector("button").addEventListener("click", startGame);
+function placeApple() {
+  const x = Math.floor((Math.random() * canvas.width) / 20) * 20;
+  const y = Math.floor((Math.random() * canvas.height) / 20) * 20;
+  return { x, y };
+}
+
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
 });
+
+startButton.addEventListener('click', initGame);
+restartButton.addEventListener('click', initGame);
