@@ -8,31 +8,15 @@
 </head>
 <body>
   <div class="menu">
-    <h1>Скажи Астог1фируллах!</h1>
+    <h1>☟</h1>
     <button id="start-game">веранда</button>
   </div>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
   <div class="game-over" id="game-over">
     <h2 id="game-over-message">Че помидоры собрать не способен?</h2>
-    <p id="score-text">Всего лишь <span id="final-score">0</span> собрал</p>
+    <p>Всего лишь <span id="final-score">0</span> собрал</p>
     <button id="restart-game">Еще</button>
   </div>
   <script src="script.js"></script>
-    // Пример: в реальном использовании, значение score будет получено из игрового процесса
-    let score = 0; 
-
-    function endGame() {
-      const finalScore = document.getElementById('final-score');
-      const scoreText = document.getElementById('score-text');
-
-      if (score === 0) {
-        scoreText.textContent = 'Даун! Ничего не собрал 🤦🏻‍♂️';
-      } else {
-        finalScore.textContent = score;
-      }
-    }
-
-    // Вызов функции, чтобы продемонстрировать работу
-    endGame();
 </body>
 </html>
