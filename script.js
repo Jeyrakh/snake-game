@@ -18,6 +18,15 @@ let direction; // Текущее направление движения
 let apple; // Позиция яблока
 let score; // Текущий счет
 
+const backgroundImage = new Image();
+backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/main/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg?raw=true'; // Замените на путь к вашему изображению
+
+backgroundImage.onload = function() {
+    // Только после загрузки изображения можно инициализировать игру
+    startButton.addEventListener('click', initGame);
+    restartButton.addEventListener('click', initGame);
+};
+
 // Функция для начала игры
 function initGame() {
   // Показываем канвас, скрываем меню и экран окончания игры
@@ -68,9 +77,8 @@ function update() {
 
 // Отрисовка игры
 function draw() {
-  // Очищаем канвас
-  ctx.fillStyle = '#000000'; // Белый фон
-  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
+  // Рисуем фоновое изображение
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
   // Рисуем яблоко
   ctx.fillStyle = '#ff6f61'; // Красный цвет яблока
