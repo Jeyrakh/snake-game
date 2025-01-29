@@ -26,7 +26,7 @@ function initGame() {
   gameOverScreen.style.display = 'none';
 
   // Инициализация начального состояния игры
-  snake = [{ x: 300, y: 200 }]; // Стартовая позиция змейки
+  snake = [{ x: 200, y: 200 }]; // Стартовая позиция змейки
   direction = { x: 20, y: 0 }; // Змейка начинает двигаться вправо
   apple = placeApple(); // Генерация первого яблока
   score = 0; // Начальный счет
@@ -160,10 +160,10 @@ document.addEventListener('keydown', (e) => {
   const key = e.key;
 
   // Изменяем направление в зависимости от нажатой клавиши
-  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
-  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
-  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
-  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -10 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 10 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -10, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 10, y: 0 };
 });
 
 // Навешиваем события на кнопки начала и рестарта
