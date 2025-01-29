@@ -160,10 +160,10 @@ document.addEventListener('keydown', (e) => {
   const key = e.key;
 
   // Изменяем направление в зависимости от нажатой клавиши
-  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -10 };
-  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 10 };
-  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -10, y: 0 };
-  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 10, y: 0 };
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
 });
 
 // Навешиваем события на кнопки начала и рестарта
