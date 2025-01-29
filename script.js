@@ -68,10 +68,9 @@ function update() {
 
 // Отрисовка игры
 function draw() {
-  // Очищаем канвас и устанавливаем фоновое изображение
-  const backgroundImage = new Image();
-  backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/4bb56ac30715df16798efa9a51ae3d5a472632a4/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg';
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  // Очищаем канвас
+  ctx.fillStyle = '#ffffff'; // Белый фон
+  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
 
   // Рисуем яблоко
   ctx.fillStyle = '#ff6f61'; // Красный цвет яблока
@@ -86,7 +85,7 @@ function draw() {
   // Рисуем счет
   ctx.fillStyle = '#000000'; // Черный цвет текста
   ctx.font = '20px Arial'; // Шрифт текста
-  ctx.fillText(`Помидоров: ${score}`, 10, 10); // Вывод счета в верхнем левом углу
+  ctx.fillText(`Помидоров: ${score}`, 20, 10); // Вывод счета в верхнем левом углу
 }
 
 // Проверяем, закончилась ли игра
@@ -115,11 +114,12 @@ function endGame() {
   finalScore.textContent = score; // Отображаем финальный счет
 }
 
+
 // Генерация нового расположения яблока
 function placeApple() {
   // Выбираем случайные координаты кратные 20
-  const x = Math.floor((Math.random() * canvas.width) / 20) * 20;
-  const y = Math.floor((Math.random() * canvas.height) / 20) * 20;
+  const x = Math.floor((Math.random() * canvas.width) / 10) * 10;
+  const y = Math.floor((Math.random() * canvas.height) / 10) * 10;
   return { x, y }; // Возвращаем координаты яблока
 }
 
@@ -161,10 +161,10 @@ document.addEventListener('keydown', (e) => {
   const key = e.key;
 
   // Изменяем направление в зависимости от нажатой клавиши
-  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -20 };
-  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 20 };
-  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -20, y: 0 };
-  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 20, y: 0 };
+  if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -10 };
+  else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 10 };
+  else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -10, y: 0 };
+  else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 10, y: 0 };
 });
 
 // Навешиваем события на кнопки начала и рестарта
