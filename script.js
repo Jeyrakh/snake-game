@@ -18,9 +18,6 @@ let direction; // Текущее направление движения
 let apple; // Позиция яблока
 let score; // Текущий счет
 
-const backgroundImage = new Image();
-backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/a13e7630b6033b975ad54b2b923eb195391972d5/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg'; // Замените на путь к вашему изображению
-
 // Функция для начала игры
 function initGame() {
   // Показываем канвас, скрываем меню и экран окончания игры
@@ -71,8 +68,9 @@ function update() {
 
 // Отрисовка игры
 function draw() {
-  // Рисуем фоновое изображение
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  // Очищаем канвас
+  ctx.fillStyle = '#000000'; // Белый фон
+  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
 
   // Рисуем яблоко
   ctx.fillStyle = '#ff6f61'; // Красный цвет яблока
@@ -85,8 +83,8 @@ function draw() {
   });
 
   // Рисуем счет
-  ctx.fillStyle = '#000000'; // Черный цвет текста
-  ctx.font = '20px Arial'; // Шрифт текста
+  ctx.fillStyle = '#ffffff'; // Черный цвет текста
+  ctx.font = '15px Arial'; // Шрифт текста
   ctx.fillText(`Помидоров: ${score}`, 10, 20); // Вывод счета в верхнем левом углу
 }
 
@@ -108,6 +106,7 @@ function isGameOver() {
 
   return false; // Если нет никакого столкновения, игра продолжается
 }
+
 
 // Завершаем игру
 function endGame() {
