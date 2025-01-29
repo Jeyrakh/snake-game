@@ -28,7 +28,7 @@ canvas {
   background-color: #ff6f91;
   color: white;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.1s;
 }
 
 .menu button:hover, .game-over button:hover {
