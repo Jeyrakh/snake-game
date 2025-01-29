@@ -21,12 +21,6 @@ let score; // Текущий счет
 const backgroundImage = new Image();
 backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/a13e7630b6033b975ad54b2b923eb195391972d5/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg'; // Замените на путь к вашему изображению
 
-backgroundImage.onload = function() {
-    // Только после загрузки изображения можно инициализировать игру
-    startButton.addEventListener('click', initGame);
-    restartButton.addEventListener('click', initGame);
-};
-
 // Функция для начала игры
 function initGame() {
   // Показываем канвас, скрываем меню и экран окончания игры
