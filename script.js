@@ -68,24 +68,25 @@ function update() {
 
 // Отрисовка игры
 function draw() {
-  // Очищаем канвас
-  ctx.fillStyle = '#ffffff'; // Белый фон
-  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
+  // Очищаем канвас и устанавливаем фоновое изображение
+  const backgroundImage = new Image();
+  backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/d2d8e69b01afb3c06c03a4eb5098562c3f758baa/%D0%A0%D0%B0%D1%81%D1%83%D0%BB.jpg';
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
   // Рисуем яблоко
   ctx.fillStyle = '#ff6f61'; // Красный цвет яблока
-  ctx.fillRect(apple.x, apple.y, 20, 20); // Яблоко размером 20x20 пикселей
+  ctx.fillRect(apple.x, apple.y, 10, 10); // Яблоко размером 20x20 пикселей
 
   // Рисуем змейку
   ctx.fillStyle = '#4CAF50'; // Зеленый цвет змейки
   snake.forEach(segment => {
-    ctx.fillRect(segment.x, segment.y, 20, 20); // Каждый сегмент размером 20x20 пикселей
+    ctx.fillRect(segment.x, segment.y, 10, 10); // Каждый сегмент размером 20x20 пикселей
   });
 
   // Рисуем счет
   ctx.fillStyle = '#000000'; // Черный цвет текста
   ctx.font = '20px Arial'; // Шрифт текста
-  ctx.fillText(`Счёт: ${score}`, 10, 20); // Вывод счета в верхнем левом углу
+  ctx.fillText(`Помидоров: ${score}`, 10, 10); // Вывод счета в верхнем левом углу
 }
 
 // Проверяем, закончилась ли игра
