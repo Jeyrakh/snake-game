@@ -70,7 +70,7 @@ function update() {
 function draw() {
   // Очищаем канвас и устанавливаем фоновое изображение
   const backgroundImage = new Image();
-  backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/d2d8e69b01afb3c06c03a4eb5098562c3f758baa/%D0%A0%D0%B0%D1%81%D1%83%D0%BB.jpg';
+  backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/4bb56ac30715df16798efa9a51ae3d5a472632a4/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg';
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
   // Рисуем яблоко
