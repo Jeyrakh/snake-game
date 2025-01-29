@@ -18,14 +18,14 @@ let direction; // Текущее направление движения
 let apple; // Позиция яблока
 let score; // Текущий счет
 
-const backgroundImage = new Image();
-backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/main/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg?raw=true'; // Замените на путь к вашему изображению
+//const backgroundImage = new Image();
+//backgroundImage.src = 'https://github.com/Jeyrakh/snake-game/blob/main/%D0%A0%D0%B0%D1%81%D1%83%D0%BB1.jpg?raw=true'; // Замените на путь к вашему изображению
 
-backgroundImage.onload = function() {
+//backgroundImage.onload = function() {
     // Только после загрузки изображения можно инициализировать игру
-    startButton.addEventListener('click', initGame);
-    restartButton.addEventListener('click', initGame);
-};
+//    startButton.addEventListener('click', initGame);
+//    restartButton.addEventListener('click', initGame);
+//};
 
 // Функция для начала игры
 function initGame() {
@@ -78,7 +78,11 @@ function update() {
 // Отрисовка игры
 function draw() {
   // Рисуем фоновое изображение
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  //ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+  // Очищаем канвас
+  ctx.fillStyle = '#000000'; // Черный фон
+  ctx.fillRect(0, 0, canvas.width, canvas.height); // Заливка всего канваса
 
   // Рисуем яблоко как эмодзи 🍎
   ctx.font = '10px Arial'; // Убедитесь, что шрифт крупнее или меньше, в зависимости от желаемого размера эмодзи
